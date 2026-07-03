@@ -5,7 +5,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-inter)', 'ui-sans-serif', 'system-ui']
+        mono: ['var(--font-space-mono)', 'ui-monospace', 'SFMono-Regular', 'monospace']
       },
       boxShadow: {
         glass: '0 30px 90px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.24)'
