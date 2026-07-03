@@ -14,7 +14,7 @@
 - Color palette (use these exact hex values everywhere in this feature): page/card-shell background `#0d1117`, card body background `#111827`, border `#30363d`, primary text `#c9d1d9`, muted/label text `#6e7681`, accent (prompts, focus, links, logo) `#28d8c6`, error `#f85149`.
 - Do not change any authentication logic, API routes (`app/api/auth/**`), or the `handleSubmit` request/response handling in the login page.
 - Do not change the login interaction model — it stays a standard username/password form with a submit button, not a typed-command flow.
-- This repository is not a git repository (confirmed via environment check). Do not run `git init`, `git add`, or `git commit` as part of this plan — verification steps replace commit steps.
+- Git was initialized for this project with a baseline commit (`Initial commit of existing Amiplast auth app`) immediately before this plan's execution began. Each task should end with a commit of its changes.
 - No automated test framework exists in this repo (no `test` script in `package.json`). Verification for each task is `npm run typecheck` (and `npm run lint` where noted), plus a final manual browser check — do not introduce a new test framework as part of this plan.
 
 ---
