@@ -11,7 +11,7 @@ const Checkbox = React.forwardRef<
   <CheckboxPrimitive.Root
     ref={ref}
     className={cn(
-      'flex h-4 w-4 items-center justify-center bg-transparent text-[11px] font-bold leading-none text-[#28d8c6] outline-none',
+      'flex h-4 w-4 items-center justify-center bg-transparent text-[11px] font-bold leading-none text-[#7aa2f7] outline-none',
       className
     )}
     {...props}
