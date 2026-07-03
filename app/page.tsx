@@ -56,21 +56,17 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#0d1117] px-5 py-10 text-[#c9d1d9]">
-      <section className="w-full max-w-[420px] border border-[#30363d] bg-[#111827] shadow-[0_30px_60px_rgba(0,0,0,0.55)]">
-        <div className="flex items-center gap-2 border-b border-[#30363d] bg-[#0d1117] px-4 py-2.5">
-          <span className="h-3 w-3 rounded-full bg-[#f85149]" />
-          <span className="h-3 w-3 rounded-full bg-[#e3b341]" />
-          <span className="h-3 w-3 rounded-full bg-[#3fb950]" />
-          <span className="ml-2 text-xs text-[#6e7681]">amiplast — login</span>
+    <main className="flex min-h-screen items-center justify-center bg-[#1a1b26] px-5 py-10 text-[#c0caf5]">
+      <section className="w-full max-w-[420px] overflow-hidden rounded border border-[#2f3549] bg-[#202331] shadow-[0_24px_80px_rgba(0,0,0,0.4)]">
+        <div className="border-b border-[#2f3549] px-8 py-5">
+          <p className="text-sm font-bold text-[#d5dcff]">* Amiplast</p>
+          <p className="mt-0.5 text-xs text-[#737aa2]">~/amiplast · login</p>
         </div>
 
-        <form className="px-8 py-10" onSubmit={handleSubmit}>
-          <p className="mb-8 text-lg font-bold tracking-wide text-[#28d8c6]">AMIPLAST</p>
-
+        <form className="px-8 py-8" onSubmit={handleSubmit}>
           <div className="space-y-1.5">
             <Label htmlFor="username">username:</Label>
-            <div className="border-b border-[#30363d] transition-colors focus-within:border-[#28d8c6]">
+            <div className="border-b border-[#2f3549] transition-colors focus-within:border-[#7aa2f7]">
               <Input
                 id="username"
                 value={username}
@@ -82,7 +78,7 @@ export default function LoginPage() {
 
           <div className="mt-6 space-y-1.5">
             <Label htmlFor="password">password:</Label>
-            <div className="flex items-center gap-2 border-b border-[#30363d] transition-colors focus-within:border-[#28d8c6]">
+            <div className="flex items-center gap-2 border-b border-[#2f3549] transition-colors focus-within:border-[#7aa2f7]">
               <Input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
@@ -93,7 +89,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword((value) => !value)}
-                className="text-[#6e7681] transition hover:text-[#28d8c6]"
+                className="text-[#737aa2] transition hover:text-[#7aa2f7]"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <EyeIcon /> : <EyeSlashIcon />}
@@ -101,26 +97,25 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <label className="mt-5 flex cursor-pointer items-center gap-1.5 text-[11px] text-[#6e7681]">
-            <span className="font-bold text-[#28d8c6]">[</span>
+          <label className="mt-5 flex cursor-pointer items-center gap-1.5 text-[11px] text-[#737aa2]">
+            <span className="font-bold text-[#7aa2f7]">[</span>
             <Checkbox checked={remember} onCheckedChange={(checked) => setRemember(checked === true)} />
-            <span className="font-bold text-[#28d8c6]">]</span>
+            <span className="font-bold text-[#7aa2f7]">]</span>
             keep me logged in
           </label>
 
-          {error ? <p className="mt-5 text-[11px] text-[#f85149]">error: {error}</p> : null}
+          {error ? <p className="mt-5 text-[11px] text-[#f7768e]">error: {error}</p> : null}
 
           <Button className="mt-7 w-full" type="submit" disabled={loading}>
-            {loading ? 'running...' : '[ run login ]'}
+            {loading ? 'Logging in...' : 'Log in'}
           </Button>
 
-          <p className="mt-6 text-[11px] text-[#6e7681]"># existing users only</p>
+          <p className="mt-6 text-[11px] text-[#565f89]"># existing users only</p>
         </form>
 
-        <div className="flex items-center gap-4 border-t border-[#30363d] px-8 py-3 text-[10px] text-[#6e7681]">
-          <span>[ ? help ]</span>
-          <span>[ i about ]</span>
-          <span>[ t terms ]</span>
+        <div className="flex items-center justify-between border-t border-[#2f3549] px-8 py-3 text-[10px] text-[#737aa2]">
+          <span>~/amiplast &gt; login</span>
+          <span className="text-[#565f89]">enter to submit</span>
         </div>
       </section>
     </main>
