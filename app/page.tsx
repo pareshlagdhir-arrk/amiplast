@@ -2,17 +2,10 @@
 
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
-
-function BrandMark() {
-  return (
-    <svg aria-hidden="true" className="h-16 w-16" viewBox="0 0 96 96" fill="none">
-      <rect x="15" y="45" width="48" height="12" rx="6" transform="rotate(-45 15 45)" fill="#0B0B45" />
-      <rect x="28" y="58" width="48" height="12" rx="6" transform="rotate(-45 28 58)" fill="#0B0B45" />
-      <rect x="41" y="71" width="34" height="12" rx="6" transform="rotate(-45 41 71)" fill="#0B0B45" />
-      <circle cx="71" cy="35" r="7" fill="#28D8C6" />
-    </svg>
-  );
-}
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 
 function EyeSlashIcon() {
   return (
@@ -27,14 +20,6 @@ function EyeIcon() {
     <svg aria-hidden="true" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
       <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12S5.42 5.25 12 5.25 21.75 12 21.75 12 18.58 18.75 12 18.75 2.25 12 2.25 12Z" />
       <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-    </svg>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg aria-hidden="true" className="h-2.5 w-2.5" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="4">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
     </svg>
   );
 }
@@ -71,88 +56,71 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#c9c4e2] px-5 py-10 text-[#0B0B45]">
-      <section className="grid w-full max-w-[1016px] overflow-hidden bg-white shadow-[0_30px_60px_rgba(63,58,110,0.28)] md:min-h-[636px] md:grid-cols-2">
-        <div className="relative flex min-h-[540px] flex-col overflow-hidden bg-[#f1f1f9] px-14 py-12 md:min-h-full">
-          <div className="pointer-events-none absolute inset-0">
-            <div className="absolute -left-24 top-[39%] h-52 w-52 rounded-full bg-[linear-gradient(150deg,#20d0cf,#006370)]" />
-            <div className="absolute left-[34%] -top-14 h-40 w-40 rounded-full bg-[#ff9ca8]" />
-            <div className="absolute -right-2 -top-4 h-40 w-40 rounded-full bg-[radial-gradient(circle_at_32%_24%,#1725a7,#05053f_72%)]" />
-            <div className="absolute -bottom-16 right-6 h-36 w-36 rounded-full bg-[#ff9ca8]" />
-            <div className="absolute bottom-8 right-[92px] h-9 w-9 rounded-full bg-[linear-gradient(150deg,#20d0cf,#006370)]" />
-            <div className="absolute bottom-24 right-3 h-6 w-6 rounded-full bg-[radial-gradient(circle_at_32%_24%,#1725a7,#05053f_72%)]" />
-          </div>
-
-          <div className="relative z-10 m-auto flex flex-col items-center text-center">
-            <BrandMark />
-            <h1 className="mt-4 text-4xl font-black tracking-tight">Amiplast</h1>
-          </div>
-
-          <nav className="relative z-10 flex gap-6 text-[11px] font-extrabold tracking-wide text-[#0B0B45]">
-            <span>About</span>
-            <span>Privacy</span>
-            <span>Terms of use</span>
-            <span>FAQ</span>
-          </nav>
+    <main className="flex min-h-screen items-center justify-center bg-[#0d1117] px-5 py-10 text-[#c9d1d9]">
+      <section className="w-full max-w-[420px] border border-[#30363d] bg-[#111827] shadow-[0_30px_60px_rgba(0,0,0,0.55)]">
+        <div className="flex items-center gap-2 border-b border-[#30363d] bg-[#0d1117] px-4 py-2.5">
+          <span className="h-3 w-3 rounded-full bg-[#f85149]" />
+          <span className="h-3 w-3 rounded-full bg-[#e3b341]" />
+          <span className="h-3 w-3 rounded-full bg-[#3fb950]" />
+          <span className="ml-2 text-xs text-[#6e7681]">amiplast — login</span>
         </div>
 
-        <div className="flex items-center justify-center px-10 py-14 sm:px-14">
-          <form className="w-full max-w-[215px]" onSubmit={handleSubmit}>
-            <h2 className="mb-9 text-[28px] font-black tracking-tight text-[#11133f]">Log in</h2>
+        <form className="px-8 py-10" onSubmit={handleSubmit}>
+          <p className="mb-8 text-lg font-bold tracking-wide text-[#28d8c6]">AMIPLAST</p>
 
-            <label className="block text-[11px] font-medium text-slate-400">
-              Username
-              <input
-                className="mt-2 h-9 w-full border-b border-[#c3c4d4] bg-transparent text-sm font-semibold text-[#0B0B45] outline-none transition focus:border-[#28d8c6]"
+          <div className="space-y-1.5">
+            <Label htmlFor="username">username:</Label>
+            <div className="border-b border-[#30363d] transition-colors focus-within:border-[#28d8c6]">
+              <Input
+                id="username"
                 value={username}
                 onChange={(event) => setUsername(event.target.value)}
                 autoComplete="username"
               />
-            </label>
+            </div>
+          </div>
 
-            <label className="mt-6 block text-[11px] font-medium text-slate-400">
-              Password
-              <span className="mt-2 flex h-9 items-center gap-2 border-b border-[#c3c4d4] transition focus-within:border-[#28d8c6]">
-                <input
-                  className="min-w-0 flex-1 bg-transparent text-sm font-semibold text-[#0B0B45] outline-none"
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  autoComplete="current-password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((value) => !value)}
-                  className="text-slate-400 transition hover:text-[#28d8c6]"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? <EyeIcon /> : <EyeSlashIcon />}
-                </button>
-              </span>
-            </label>
+          <div className="mt-6 space-y-1.5">
+            <Label htmlFor="password">password:</Label>
+            <div className="flex items-center gap-2 border-b border-[#30363d] transition-colors focus-within:border-[#28d8c6]">
+              <Input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                autoComplete="current-password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((value) => !value)}
+                className="text-[#6e7681] transition hover:text-[#28d8c6]"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeIcon /> : <EyeSlashIcon />}
+              </button>
+            </div>
+          </div>
 
-            <label className="mt-4 flex cursor-pointer items-center gap-2 text-[11px] font-medium text-slate-400">
-              <input className="peer sr-only" type="checkbox" checked={remember} onChange={(event) => setRemember(event.target.checked)} />
-              <span className="grid h-4 w-4 place-items-center rounded-full border border-[#28d8c6] transition peer-checked:bg-[#28d8c6]">
-                {remember ? <CheckIcon /> : null}
-              </span>
-              Keep me logged in
-            </label>
+          <label className="mt-5 flex cursor-pointer items-center gap-1.5 text-[11px] text-[#6e7681]">
+            <span className="font-bold text-[#28d8c6]">[</span>
+            <Checkbox checked={remember} onCheckedChange={(checked) => setRemember(checked === true)} />
+            <span className="font-bold text-[#28d8c6]">]</span>
+            keep me logged in
+          </label>
 
-            {error ? (
-              <p className="mt-4 rounded-md bg-red-50 px-3 py-2 text-center text-[11px] font-semibold text-red-500">{error}</p>
-            ) : null}
+          {error ? <p className="mt-5 text-[11px] text-[#f85149]">error: {error}</p> : null}
 
-            <button
-              className="mt-6 h-10 w-full rounded-full bg-[#8fe4dc] text-xs font-extrabold uppercase tracking-wide text-white shadow-[0_14px_24px_rgba(79,211,203,0.4)] transition hover:bg-[#77ddd3] disabled:cursor-not-allowed disabled:opacity-70"
-              disabled={loading}
-              type="submit"
-            >
-              {loading ? 'Logging in...' : 'Log in'}
-            </button>
+          <Button className="mt-7 w-full" type="submit" disabled={loading}>
+            {loading ? 'running...' : '[ run login ]'}
+          </Button>
 
-            <p className="mt-6 text-center text-[11px] font-medium text-slate-300">Existing users only</p>
-          </form>
+          <p className="mt-6 text-[11px] text-[#6e7681]"># existing users only</p>
+        </form>
+
+        <div className="flex items-center gap-4 border-t border-[#30363d] px-8 py-3 text-[10px] text-[#6e7681]">
+          <span>[ ? help ]</span>
+          <span>[ i about ]</span>
+          <span>[ t terms ]</span>
         </div>
       </section>
     </main>
