@@ -22,10 +22,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     is_default: boolean;
   }> | null;
 
-  const name = body?.name?.trim();
-  const type = body?.type?.trim();
-  const address = body?.address?.trim() || null;
-  const phone = body?.phone?.trim() || null;
+  const name = typeof body?.name === 'string' ? body.name.trim() : '';
+  const type = typeof body?.type === 'string' ? body.type.trim() : '';
+  const address = (typeof body?.address === 'string' ? body.address.trim() : '') || null;
+  const phone = (typeof body?.phone === 'string' ? body.phone.trim() : '') || null;
   const isDefaultExplicit = typeof body?.is_default === 'boolean' ? body.is_default : null;
 
   if (!name || !type) {

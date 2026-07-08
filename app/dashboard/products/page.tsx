@@ -126,7 +126,12 @@ export default function ProductsPage() {
 
   async function resetSrNo() {
     if (!window.confirm('Reset the product Sr No counter back to 1?')) return;
-    await fetch('/api/master/products/reset-sr', { method: 'POST' });
+    const res = await fetch('/api/master/products/reset-sr', { method: 'POST' });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      window.alert(data.message ?? 'Reset failed');
+      return;
+    }
     window.alert('Sr No counter reset to 1.');
   }
 

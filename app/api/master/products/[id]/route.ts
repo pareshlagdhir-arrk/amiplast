@@ -18,11 +18,11 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     wholesale_price: string;
   }> | null;
 
-  const sku = body?.sku?.trim();
-  const name = body?.name?.trim();
-  const description = body?.description?.trim() || null;
-  const categoryId = body?.category_id?.trim();
-  const baseUnitId = body?.base_unit_id?.trim();
+  const sku = typeof body?.sku === 'string' ? body.sku.trim() : '';
+  const name = typeof body?.name === 'string' ? body.name.trim() : '';
+  const description = (typeof body?.description === 'string' ? body.description.trim() : '') || null;
+  const categoryId = typeof body?.category_id === 'string' ? body.category_id.trim() : '';
+  const baseUnitId = typeof body?.base_unit_id === 'string' ? body.base_unit_id.trim() : '';
 
   if (!sku || !name || !categoryId || !baseUnitId) {
     return NextResponse.json(

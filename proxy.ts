@@ -7,25 +7,35 @@ function getKey() {
 }
 
 export async function proxy(request: NextRequest) {
-  if (!request.nextUrl.pathname.startsWith('/dashboard')) {
+  const { pathname } = request.nextUrl;
+  const isProtected = pathname.startsWith('/dashboard') || pathname.startsWith('/api/master');
+
+  if (!isProtected) {
     return NextResponse.next();
   }
 
   const token = request.cookies.get('auth_token')?.value;
   const key = getKey();
 
-  if (!token || !key) {
+  const unauthorized = () => {
+    if (pathname.startsWith('/api')) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
     return NextResponse.redirect(new URL('/', request.url));
+  };
+
+  if (!token || !key) {
+    return unauthorized();
   }
 
   try {
     await jwtVerify(token, key);
     return NextResponse.next();
   } catch {
-    return NextResponse.redirect(new URL('/', request.url));
+    return unauthorized();
   }
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*']
+  matcher: ['/dashboard/:path*', '/api/master/:path*']
 };

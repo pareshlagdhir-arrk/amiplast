@@ -42,8 +42,8 @@ export async function listSimple(table: SimpleTable): Promise<NextResponse> {
 
 export async function createSimple(table: SimpleTable, request: Request): Promise<NextResponse> {
   const body = (await request.json().catch(() => null)) as { id?: string; name?: string } | null;
-  const id = body?.id?.trim();
-  const name = body?.name?.trim();
+  const id = typeof body?.id === 'string' ? body.id.trim() : '';
+  const name = typeof body?.name === 'string' ? body.name.trim() : '';
 
   if (!id || !name) {
     return NextResponse.json({ message: 'Code and name are required' }, { status: 400 });
@@ -70,7 +70,7 @@ export async function updateSimple(
   request: Request
 ): Promise<NextResponse> {
   const body = (await request.json().catch(() => null)) as { name?: string } | null;
-  const name = body?.name?.trim();
+  const name = typeof body?.name === 'string' ? body.name.trim() : '';
 
   if (!name) {
     return NextResponse.json({ message: 'Name is required' }, { status: 400 });

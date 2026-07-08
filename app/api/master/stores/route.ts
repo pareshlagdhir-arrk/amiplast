@@ -55,12 +55,12 @@ export async function POST(request: Request) {
     is_default: boolean;
   }> | null;
 
-  const id = body?.id?.trim();
-  const name = body?.name?.trim();
-  const type = body?.type?.trim();
-  const address = body?.address?.trim() || null;
-  const phone = body?.phone?.trim() || null;
-  let isDefault = Boolean(body?.is_default);
+  const id = typeof body?.id === 'string' ? body.id.trim() : '';
+  const name = typeof body?.name === 'string' ? body.name.trim() : '';
+  const type = typeof body?.type === 'string' ? body.type.trim() : '';
+  const address = (typeof body?.address === 'string' ? body.address.trim() : '') || null;
+  const phone = (typeof body?.phone === 'string' ? body.phone.trim() : '') || null;
+  let isDefault = typeof body?.is_default === 'boolean' ? body.is_default : false;
 
   if (!id || !name || !type) {
     return NextResponse.json({ message: 'Code, name, and type are required' }, { status: 400 });
