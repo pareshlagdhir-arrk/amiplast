@@ -8,10 +8,10 @@ import styles from './app-settings.module.css';
 export type { AppSettingsData };
 
 const CURRENCIES = [
-  { value: 'MGA', label: 'MGA — Malagasy Ariary' },
-  { value: 'EUR', label: 'EUR — Euro' },
-  { value: 'USD', label: 'USD — US Dollar' },
-  { value: 'GBP', label: 'GBP — British Pound' },
+  { value: 'Ar', label: 'Ar — Malagasy Ariary' },
+  { value: '€', label: '€ — Euro' },
+  { value: '$', label: '$ — US Dollar' },
+  { value: '£', label: '£ — British Pound' },
 ];
 
 const NUMBER_FORMATS = [

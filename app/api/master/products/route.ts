@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getPool } from '@/lib/db';
+import { ensureSchema } from '@/lib/schema';
 import { isForeignKeyViolation } from '@/lib/master/simple-entity';
 
 export const runtime = 'nodejs';
@@ -52,6 +53,7 @@ const SELECT_COLS = `p.id, p.sr_no, p.sku, p.name, p.description, p.category_id,
        c.name AS category_name, u.name AS base_unit_name`;
 
 export async function GET(request: Request) {
+  await ensureSchema();
   const url = new URL(request.url);
   const page = Math.max(1, Number(url.searchParams.get('page')) || 1);
   const pageSizeRaw = Number(url.searchParams.get('pageSize')) || 20;
@@ -60,12 +62,22 @@ export async function GET(request: Request) {
   const sortExpr = SORT_COLUMNS[sortKey] ?? SORT_COLUMNS.sr_no;
   const dir = url.searchParams.get('dir') === 'desc' ? 'DESC' : 'ASC';
   const name = (url.searchParams.get('name') ?? '').trim();
+  const categoryId = (url.searchParams.get('categoryId') ?? '').trim();
+  const unitId = (url.searchParams.get('unitId') ?? '').trim();
 
   const where: string[] = [];
   const params: unknown[] = [];
   if (name) {
     params.push(`%${name}%`);
     where.push(`p.name ILIKE $${params.length}`);
+  }
+  if (categoryId) {
+    params.push(categoryId);
+    where.push(`p.category_id = $${params.length}`);
+  }
+  if (unitId) {
+    params.push(unitId);
+    where.push(`p.base_unit_id = $${params.length}`);
   }
   const whereSql = where.length ? `WHERE ${where.join(' AND ')}` : '';
 
@@ -93,6 +105,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  await ensureSchema();
   const body = (await request.json().catch(() => null)) as Partial<{
     sku: string;
     name: string;

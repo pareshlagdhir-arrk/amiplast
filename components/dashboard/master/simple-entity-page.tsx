@@ -10,16 +10,13 @@ type Item = { id: string; name: string };
 export function SimpleEntityPage({
   title,
   apiPath,
-  codeLabel,
 }: {
   title: string;
   apiPath: string;
-  codeLabel: string;
 }) {
   const [items, setItems] = useState<Item[]>([]);
   const [editing, setEditing] = useState<Item | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [error, setError] = useState('');
 
@@ -36,7 +33,6 @@ export function SimpleEntityPage({
 
   function openCreate() {
     setEditing(null);
-    setCode('');
     setName('');
     setError('');
     setShowForm(true);
@@ -44,13 +40,13 @@ export function SimpleEntityPage({
 
   function openEdit(item: Item) {
     setEditing(item);
-    setCode(item.id);
     setName(item.name);
     setError('');
     setShowForm(true);
   }
 
-  async function submit() {
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
     setError('');
     const res = editing
       ? await fetch(`${apiPath}/${encodeURIComponent(editing.id)}`, {
@@ -61,7 +57,7 @@ export function SimpleEntityPage({
       : await fetch(apiPath, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: code, name }),
+          body: JSON.stringify({ name }),
         });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
@@ -73,7 +69,7 @@ export function SimpleEntityPage({
   }
 
   async function remove(item: Item) {
-    if (!window.confirm(`Delete "${item.id}"?`)) return;
+    if (!window.confirm(`Delete "${item.name}"?`)) return;
     const res = await fetch(`${apiPath}/${encodeURIComponent(item.id)}`, { method: 'DELETE' });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
@@ -83,10 +79,7 @@ export function SimpleEntityPage({
     await load();
   }
 
-  const columns: Column<Item>[] = [
-    { header: codeLabel, cell: (row) => row.id },
-    { header: 'name', cell: (row) => row.name },
-  ];
+  const columns: Column<Item>[] = [{ header: 'NAME', cell: (row) => row.name }];
 
   return (
     <main className="mx-auto max-w-[720px] px-6 py-10">
@@ -98,22 +91,22 @@ export function SimpleEntityPage({
       {showForm && (
         <section className="mb-8 rounded border border-[#2f3549] bg-[#202331] p-6">
           <h2 className="mb-4 text-base font-bold text-[#d5dcff]">
-            {editing ? 'edit' : 'create'}
+            {editing ? 'EDIT' : 'CREATE'}
           </h2>
-          {!editing && (
-            <TextField id="code" label={codeLabel} value={code} onChange={setCode} />
-          )}
-          <TextField id="name" label="name" value={name} onChange={setName} />
-          {error && <p className="mb-4 text-sm text-[#f7768e]">{error}</p>}
-          <div className="flex gap-3">
-            <Button onClick={submit}>save</Button>
-            <button
-              onClick={() => setShowForm(false)}
-              className="text-sm text-[#737aa2] hover:text-[#c0caf5]"
-            >
-              cancel
-            </button>
-          </div>
+          <form onSubmit={submit}>
+            <TextField id="name" label="NAME" value={name} onChange={setName} />
+            {error && <p className="mb-4 text-sm text-[#f7768e]">{error}</p>}
+            <div className="flex gap-3">
+              <Button type="submit">save</Button>
+              <button
+                type="button"
+                onClick={() => setShowForm(false)}
+                className="text-sm text-[#737aa2] hover:text-[#c0caf5]"
+              >
+                cancel
+              </button>
+            </div>
+          </form>
         </section>
       )}
 

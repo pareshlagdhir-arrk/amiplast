@@ -6,28 +6,6 @@ const LOCALES: Record<string, string> = {
   de: 'de-DE',
 };
 
-// Formats a money value following the app-settings number format, currency and
-// position. Returns an empty string for blank/null values (never a stray 0).
-export function formatMoney(
-  value: string | number | null | undefined,
-  settings: Pick<AppSettingsData, 'numberFormat' | 'currency' | 'position'>
-): string {
-  if (value === null || value === undefined || value === '') return '';
-  const n = typeof value === 'number' ? value : Number(value);
-  if (Number.isNaN(n)) return String(value);
-
-  const locale = LOCALES[settings.numberFormat] ?? LOCALES.fr;
-  const num = new Intl.NumberFormat(locale, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(n);
-
-  if (!settings.currency) return num;
-  return settings.position === 'prefix'
-    ? `${settings.currency} ${num}`
-    : `${num} ${settings.currency}`;
-}
-
 // Keeps only digits and a single decimal point (max two decimals). Used to
 // constrain price inputs to numbers without using a number spinner.
 export function sanitizeAmountInput(raw: string): string {
@@ -40,4 +18,50 @@ export function sanitizeAmountInput(raw: string): string {
     cleaned = intPart + '.' + decPart.slice(0, 2);
   }
   return cleaned;
+}
+
+// Locale metadata for the number-format settings. groupSep / decimalSep are
+// derived from Intl so the input always matches the chosen display format.
+function getSeparators(numberFormat: string): { group: string; decimal: string; locale: string } {
+  const locale = LOCALES[numberFormat] ?? LOCALES.fr;
+  const parts = new Intl.NumberFormat(locale).formatToParts(1234.5);
+  const group = parts.find((p) => p.type === 'group')?.value ?? '';
+  const decimal = parts.find((p) => p.type === 'decimal')?.value ?? '.';
+  return { group, decimal, locale };
+}
+
+// Formats a raw numeric string ("1234.5") into the locale display form, e.g.
+// "1 234,5" (fr) / "1,234.5" (en) / "1.234,5" (de). Returns '' for empty.
+export function formatAmountForInput(
+  raw: string,
+  settings: Pick<AppSettingsData, 'numberFormat'>
+): string {
+  if (!raw) return '';
+  const { group, decimal, locale } = getSeparators(settings.numberFormat);
+  let [intPart, decPart] = raw.split('.');
+  intPart = intPart.replace(/^0+(?=\d)/, '');
+  if (intPart === '') intPart = '0';
+  const n = parseInt(intPart, 10);
+  const intFmt = Number.isNaN(n)
+    ? intPart
+    : new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(n);
+  let result = intFmt;
+  if (raw.includes('.')) {
+    result += decimal + (decPart ?? '');
+  }
+  void group;
+  return result;
+}
+
+// Parses a locale-formatted input string back into the raw "1234.5" form
+// used by the draft state. Accepts both locale separators and bare digits.
+export function parseAmountFromInput(
+  display: string,
+  settings: Pick<AppSettingsData, 'numberFormat'>
+): string {
+  const { group, decimal } = getSeparators(settings.numberFormat);
+  let cleaned = display;
+  if (group) cleaned = cleaned.split(group).join('');
+  if (decimal && decimal !== '.') cleaned = cleaned.replace(decimal, '.');
+  return sanitizeAmountInput(cleaned);
 }

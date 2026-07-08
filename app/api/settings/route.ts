@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server';
 import { getPool } from '@/lib/db';
+import { ensureSchema } from '@/lib/schema';
 import { DEFAULT_SETTINGS, type Settings } from '@/lib/settings';
 
 export const runtime = 'nodejs';
 
 export async function GET() {
+  await ensureSchema();
   const result = await getPool().query<{ data: Settings }>(
     'SELECT data FROM settings WHERE id = 1'
   );
@@ -25,6 +27,7 @@ export async function PUT(request: Request) {
     company: { ...DEFAULT_SETTINGS.company, ...body.company },
   };
 
+  await ensureSchema();
   const result = await getPool().query<{ data: Settings }>(
     `INSERT INTO settings (id, data) VALUES (1, $1)
      ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()

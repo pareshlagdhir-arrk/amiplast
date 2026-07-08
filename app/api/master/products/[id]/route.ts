@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
 import { getPool } from '@/lib/db';
+import { ensureSchema } from '@/lib/schema';
 import { isForeignKeyViolation } from '@/lib/master/simple-entity';
 import { parseMoney, type ProductRow } from '../route';
 
 export const runtime = 'nodejs';
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  await ensureSchema();
   const { id } = await params;
   const body = (await request.json().catch(() => null)) as Partial<{
     sku: string;
@@ -58,6 +60,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 }
 
 export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+  await ensureSchema();
   const { id } = await params;
   const result = await getPool().query('DELETE FROM products WHERE id = $1', [id]);
   if (result.rowCount === 0) {

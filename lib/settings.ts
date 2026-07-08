@@ -25,7 +25,7 @@ export interface Settings {
 export const DEFAULT_SETTINGS: Settings = {
   app: {
     appTitle: 'Amiplast',
-    currency: 'MGA',
+    currency: 'Ar',
     position: 'suffix',
     numberFormat: 'fr',
     salesInvoiceStart: '1',
