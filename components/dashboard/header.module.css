@@ -1,0 +1,79 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  padding: 0 24px;
+  background: #202331;
+  border-bottom: 1px solid #2f3549;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.title {
+  color: #d5dcff;
+}
+
+.path {
+  color: #565f89;
+}
+
+.right {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profileButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 6px;
+  border: 1px solid #2f3549;
+  background: transparent;
+  color: #737aa2;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.profileButton:hover {
+  color: #7aa2f7;
+  background: #1a1b26;
+  border-color: #7aa2f7;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 6px;
+  border: 1px solid #2f3549;
+  background: transparent;
+  color: #c0caf5;
+  font-size: 13px;
+  text-decoration: none;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.trigger:hover {
+  color: #7aa2f7;
+  border-color: #7aa2f7;
+  background: #1a1b26;
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+}
