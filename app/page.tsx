@@ -71,7 +71,6 @@ export default function LoginPage() {
                 id="username"
                 value={username}
                 onChange={(event) => setUsername(event.target.value)}
-                autoComplete="username"
               />
             </div>
           </div>
@@ -84,7 +83,6 @@ export default function LoginPage() {
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                autoComplete="current-password"
               />
               <button
                 type="button"
@@ -97,23 +95,23 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <label className="mt-5 flex cursor-pointer items-center gap-1.5 text-[11px] text-[#737aa2]">
+          <label className="mt-5 flex cursor-pointer items-center gap-1.5 text-xs text-[#737aa2]">
             <span className="font-bold text-[#7aa2f7]">[</span>
             <Checkbox checked={remember} onCheckedChange={(checked) => setRemember(checked === true)} />
             <span className="font-bold text-[#7aa2f7]">]</span>
             keep me logged in
           </label>
 
-          {error ? <p className="mt-5 text-[11px] text-[#f7768e]">error: {error}</p> : null}
+          {error ? <p className="mt-5 text-xs text-[#f7768e]">error: {error}</p> : null}
 
           <Button className="mt-7 w-full" type="submit" disabled={loading}>
             {loading ? 'Logging in...' : 'Log in'}
           </Button>
 
-          <p className="mt-6 text-[11px] text-[#565f89]"># existing users only</p>
+          <p className="mt-6 text-xs text-[#565f89]"># existing users only</p>
         </form>
 
-        <div className="flex items-center justify-between border-t border-[#2f3549] px-8 py-3 text-[10px] text-[#737aa2]">
+        <div className="flex items-center justify-between border-t border-[#2f3549] px-8 py-3 text-xs text-[#737aa2]">
           <span>~/amiplast &gt; login</span>
           <span className="text-[#565f89]">enter to submit</span>
         </div>

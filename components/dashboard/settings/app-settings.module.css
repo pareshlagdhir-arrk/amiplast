@@ -1,0 +1,92 @@
+.section {
+  padding: 32px 36px;
+  border: 1px solid #2f3549;
+  border-radius: 6px;
+  background: #202331;
+}
+
+.heading {
+  color: #d5dcff;
+  margin-bottom: 26px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #2f3549;
+}
+
+.field {
+  margin-bottom: 22px;
+}
+
+.field:last-child {
+  margin-bottom: 0;
+}
+
+.inputWrapper {
+  margin-top: 6px;
+  border-bottom: 1px solid #2f3549;
+  transition: border-color 0.15s;
+}
+
+.inputWrapper:focus-within {
+  border-bottom-color: #7aa2f7;
+}
+
+.selectWrapper {
+  margin-top: 6px;
+}
+
+.select {
+  width: 100%;
+  height: 40px;
+  padding: 0 10px;
+  background: #1a1b26;
+  border: 1px solid #2f3549;
+  border-radius: 4px;
+  color: #c0caf5;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23737aa2' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 32px;
+  transition: border-color 0.15s;
+}
+
+.select:focus {
+  border-color: #7aa2f7;
+}
+
+.radioGroup {
+  display: flex;
+  gap: 24px;
+  margin-top: 6px;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #737aa2;
+  cursor: pointer;
+}
+
+.bracket {
+  font-weight: 700;
+  color: #7aa2f7;
+}
+
+.radio {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border: 1px solid #565f89;
+  border-radius: 50%;
+  margin: 0;
+  cursor: pointer;
+  position: relative;
+}
+
+.radio:checked {
+  border-color: #7aa2f7;
+  background: #7aa2f7;
+}
