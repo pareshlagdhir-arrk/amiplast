@@ -7,7 +7,7 @@ import { StoreForm, type StoreDraft } from '@/components/dashboard/master/store-
 
 type Store = StoreDraft & { created_at: string; updated_at: string };
 
-const EMPTY: StoreDraft = { id: '', name: '', address: '', phone: '', type: '', is_default: false };
+const EMPTY: StoreDraft = { id: '', name: '', address: '', phone: '', email: '', type: '', is_default: false };
 
 export default function StoresPage() {
   const [items, setItems] = useState<Store[]>([]);
@@ -72,6 +72,7 @@ export default function StoresPage() {
     { header: 'name', cell: (row) => row.name },
     { header: 'type', cell: (row) => row.type },
     { header: 'phone', cell: (row) => row.phone || '—' },
+    { header: 'email', cell: (row) => row.email || '—' },
     { header: 'default', cell: (row) => (row.is_default ? 'yes' : '') },
   ];
 

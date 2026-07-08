@@ -2,7 +2,10 @@
 
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import type { AppSettingsData } from '@/lib/settings';
 import styles from './app-settings.module.css';
+
+export type { AppSettingsData };
 
 const CURRENCIES = [
   { value: 'MGA', label: 'MGA — Malagasy Ariary' },
@@ -16,16 +19,6 @@ const NUMBER_FORMATS = [
   { value: 'en', label: 'English (1,234.56)' },
   { value: 'de', label: 'German (1.234,56)' },
 ];
-
-export interface AppSettingsData {
-  appTitle: string;
-  currency: string;
-  position: 'prefix' | 'suffix';
-  numberFormat: string;
-  salesInvoiceStart: string;
-  purchaseInvoiceStart: string;
-  defaultMargin: string;
-}
 
 interface AppSettingsProps {
   data: AppSettingsData;

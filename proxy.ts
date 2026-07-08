@@ -8,7 +8,10 @@ function getKey() {
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const isProtected = pathname.startsWith('/dashboard') || pathname.startsWith('/api/master');
+  const isProtected =
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/api/master') ||
+    pathname.startsWith('/api/settings');
 
   if (!isProtected) {
     return NextResponse.next();
@@ -37,5 +40,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/api/master/:path*']
+  matcher: ['/dashboard/:path*', '/api/master/:path*', '/api/settings', '/api/settings/:path*']
 };

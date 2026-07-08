@@ -10,7 +10,7 @@ import {
 export const runtime = 'nodejs';
 
 const SELECT_COLS =
-  'id, name, address, phone, type, is_default, created_at, updated_at';
+  'id, name, address, phone, email, type, is_default, created_at, updated_at';
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -18,6 +18,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     name: string;
     address: string;
     phone: string;
+    email: string;
     type: string;
     is_default: boolean;
   }> | null;
@@ -26,6 +27,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const type = typeof body?.type === 'string' ? body.type.trim() : '';
   const address = (typeof body?.address === 'string' ? body.address.trim() : '') || null;
   const phone = (typeof body?.phone === 'string' ? body.phone.trim() : '') || null;
+  const email = (typeof body?.email === 'string' ? body.email.trim() : '') || null;
   const isDefaultExplicit = typeof body?.is_default === 'boolean' ? body.is_default : null;
 
   if (!name || !type) {
@@ -67,10 +69,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
     const result = await client.query<StoreRow>(
       `UPDATE stores
-         SET name = $2, address = $3, phone = $4, type = $5, is_default = $6, updated_at = NOW()
+         SET name = $2, address = $3, phone = $4, email = $5, type = $6, is_default = $7, updated_at = NOW()
        WHERE id = $1
        RETURNING ${SELECT_COLS}`,
-      [id, name, address, phone, type, isDefault]
+      [id, name, address, phone, email, type, isDefault]
     );
 
     if (result.rowCount === 0) {

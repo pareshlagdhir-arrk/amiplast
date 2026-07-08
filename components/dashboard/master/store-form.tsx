@@ -9,6 +9,7 @@ export type StoreDraft = {
   name: string;
   address: string;
   phone: string;
+  email: string;
   type: string;
   is_default: boolean;
 };
@@ -55,6 +56,7 @@ export function StoreForm({
       <TextField id="name" label="store name" value={draft.name} onChange={(v) => set('name', v)} />
       <TextField id="address" label="address" value={draft.address} onChange={(v) => set('address', v)} textarea />
       <TextField id="phone" label="phone" value={draft.phone} onChange={(v) => set('phone', v)} />
+      <TextField id="email" label="email" value={draft.email} onChange={(v) => set('email', v)} />
       <SelectField
         id="type"
         label="type"

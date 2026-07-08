@@ -1,17 +1,17 @@
 import { NextResponse } from 'next/server';
 import { getPool } from '@/lib/db';
-import { isUniqueViolation, isForeignKeyViolation } from '@/lib/master/simple-entity';
+import { isForeignKeyViolation } from '@/lib/master/simple-entity';
 
 export const runtime = 'nodejs';
 
 export type ProductRow = {
   id: string;
   sr_no: number;
-  sku: string;
+  sku: string | null;
   name: string;
   description: string | null;
-  category_id: string;
-  base_unit_id: string;
+  category_id: string | null;
+  base_unit_id: string | null;
   purchase_price: string | null;
   retail_price: string | null;
   wholesale_price: string | null;
@@ -20,8 +20,8 @@ export type ProductRow = {
 };
 
 export type ProductListRow = ProductRow & {
-  category_name: string;
-  base_unit_name: string;
+  category_name: string | null;
+  base_unit_name: string | null;
 };
 
 // Parses an optional money string. Returns { ok, value } where value is a
@@ -34,17 +34,61 @@ export function parseMoney(raw: unknown): { ok: boolean; value: string | null } 
   return { ok: true, value: trimmed };
 }
 
-export async function GET() {
-  const result = await getPool().query<ProductListRow>(
-    `SELECT p.id, p.sr_no, p.sku, p.name, p.description, p.category_id, p.base_unit_id,
-            p.purchase_price, p.retail_price, p.wholesale_price, p.created_at, p.updated_at,
-            c.name AS category_name, u.name AS base_unit_name
-       FROM products p
-       JOIN categories c ON c.id = p.category_id
-       JOIN base_units u ON u.id = p.base_unit_id
-      ORDER BY p.sr_no`
+// Whitelist of sortable columns → safe SQL expressions (never interpolate
+// user input into the ORDER BY clause).
+const SORT_COLUMNS: Record<string, string> = {
+  sr_no: 'p.sr_no',
+  name: 'lower(p.name)',
+  category_name: 'lower(c.name)',
+  purchase_price: 'p.purchase_price',
+  retail_price: 'p.retail_price',
+  wholesale_price: 'p.wholesale_price',
+  created_at: 'p.created_at',
+};
+
+const SELECT_COLS = `p.id, p.sr_no, p.sku, p.name, p.description, p.category_id, p.base_unit_id,
+       p.purchase_price, p.retail_price, p.wholesale_price, p.created_at, p.updated_at,
+       c.name AS category_name, u.name AS base_unit_name`;
+
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const page = Math.max(1, Number(url.searchParams.get('page')) || 1);
+  const pageSizeRaw = Number(url.searchParams.get('pageSize')) || 20;
+  const pageSize = Math.min(100, Math.max(1, pageSizeRaw));
+  const sortKey = url.searchParams.get('sort') ?? 'sr_no';
+  const sortExpr = SORT_COLUMNS[sortKey] ?? SORT_COLUMNS.sr_no;
+  const dir = url.searchParams.get('dir') === 'desc' ? 'DESC' : 'ASC';
+  const name = (url.searchParams.get('name') ?? '').trim();
+
+  const where: string[] = [];
+  const params: unknown[] = [];
+  if (name) {
+    params.push(`%${name}%`);
+    where.push(`p.name ILIKE $${params.length}`);
+  }
+  const whereSql = where.length ? `WHERE ${where.join(' AND ')}` : '';
+
+  const pool = getPool();
+  const countResult = await pool.query<{ total: string }>(
+    `SELECT COUNT(*)::text AS total FROM products p ${whereSql}`,
+    params
   );
-  return NextResponse.json({ items: result.rows });
+  const total = Number(countResult.rows[0].total);
+
+  const offset = (page - 1) * pageSize;
+  const listParams = [...params, pageSize, offset];
+  const listResult = await pool.query<ProductListRow>(
+    `SELECT ${SELECT_COLS}
+       FROM products p
+       LEFT JOIN categories c ON c.id = p.category_id
+       LEFT JOIN base_units u ON u.id = p.base_unit_id
+       ${whereSql}
+      ORDER BY ${sortExpr} ${dir}, p.sr_no ASC
+      LIMIT $${listParams.length - 1} OFFSET $${listParams.length}`,
+    listParams
+  );
+
+  return NextResponse.json({ items: listResult.rows, total, page, pageSize });
 }
 
 export async function POST(request: Request) {
@@ -59,17 +103,14 @@ export async function POST(request: Request) {
     wholesale_price: string;
   }> | null;
 
-  const sku = typeof body?.sku === 'string' ? body.sku.trim() : '';
   const name = typeof body?.name === 'string' ? body.name.trim() : '';
+  const sku = (typeof body?.sku === 'string' ? body.sku.trim() : '') || null;
   const description = (typeof body?.description === 'string' ? body.description.trim() : '') || null;
-  const categoryId = typeof body?.category_id === 'string' ? body.category_id.trim() : '';
-  const baseUnitId = typeof body?.base_unit_id === 'string' ? body.base_unit_id.trim() : '';
+  const categoryId = (typeof body?.category_id === 'string' ? body.category_id.trim() : '') || null;
+  const baseUnitId = (typeof body?.base_unit_id === 'string' ? body.base_unit_id.trim() : '') || null;
 
-  if (!sku || !name || !categoryId || !baseUnitId) {
-    return NextResponse.json(
-      { message: 'SKU, name, category, and base unit are required' },
-      { status: 400 }
-    );
+  if (!name) {
+    return NextResponse.json({ message: 'Name is required' }, { status: 400 });
   }
 
   const purchase = parseMoney(body?.purchase_price);
@@ -88,22 +129,29 @@ export async function POST(request: Request) {
     );
     const srNo = counter.rows[0].sr_no;
 
-    const result = await client.query<ProductRow>(
+    const inserted = await client.query<{ id: string }>(
       `INSERT INTO products
          (sr_no, sku, name, description, category_id, base_unit_id,
           purchase_price, retail_price, wholesale_price)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-       RETURNING id, sr_no, sku, name, description, category_id, base_unit_id,
-                 purchase_price, retail_price, wholesale_price, created_at, updated_at`,
+       RETURNING id`,
       [srNo, sku, name, description, categoryId, baseUnitId, purchase.value, retail.value, wholesale.value]
     );
+
+    // Return the row with joined category/unit names so it can render at once.
+    const result = await client.query<ProductListRow>(
+      `SELECT ${SELECT_COLS}
+         FROM products p
+         LEFT JOIN categories c ON c.id = p.category_id
+         LEFT JOIN base_units u ON u.id = p.base_unit_id
+        WHERE p.id = $1`,
+      [inserted.rows[0].id]
+    );
+
     await client.query('COMMIT');
     return NextResponse.json({ item: result.rows[0] }, { status: 201 });
   } catch (error) {
     await client.query('ROLLBACK');
-    if (isUniqueViolation(error)) {
-      return NextResponse.json({ message: `SKU "${sku}" already exists` }, { status: 409 });
-    }
     if (isForeignKeyViolation(error)) {
       return NextResponse.json({ message: 'Category or base unit does not exist' }, { status: 400 });
     }

@@ -2,16 +2,10 @@
 
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import type { CompanyInfoData } from '@/lib/settings';
 import styles from './company-info.module.css';
 
-export interface CompanyInfoData {
-  name: string;
-  address: string;
-  city: string;
-  country: string;
-  email: string;
-  phone: string;
-}
+export type { CompanyInfoData };
 
 interface CompanyInfoProps {
   data: CompanyInfoData;

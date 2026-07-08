@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getPool } from '@/lib/db';
-import { isUniqueViolation, isForeignKeyViolation } from '@/lib/master/simple-entity';
+import { isForeignKeyViolation } from '@/lib/master/simple-entity';
 import { parseMoney, type ProductRow } from '../route';
 
 export const runtime = 'nodejs';
@@ -18,17 +18,14 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     wholesale_price: string;
   }> | null;
 
-  const sku = typeof body?.sku === 'string' ? body.sku.trim() : '';
   const name = typeof body?.name === 'string' ? body.name.trim() : '';
+  const sku = (typeof body?.sku === 'string' ? body.sku.trim() : '') || null;
   const description = (typeof body?.description === 'string' ? body.description.trim() : '') || null;
-  const categoryId = typeof body?.category_id === 'string' ? body.category_id.trim() : '';
-  const baseUnitId = typeof body?.base_unit_id === 'string' ? body.base_unit_id.trim() : '';
+  const categoryId = (typeof body?.category_id === 'string' ? body.category_id.trim() : '') || null;
+  const baseUnitId = (typeof body?.base_unit_id === 'string' ? body.base_unit_id.trim() : '') || null;
 
-  if (!sku || !name || !categoryId || !baseUnitId) {
-    return NextResponse.json(
-      { message: 'SKU, name, category, and base unit are required' },
-      { status: 400 }
-    );
+  if (!name) {
+    return NextResponse.json({ message: 'Name is required' }, { status: 400 });
   }
 
   const purchase = parseMoney(body?.purchase_price);
@@ -53,9 +50,6 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     }
     return NextResponse.json({ item: result.rows[0] });
   } catch (error) {
-    if (isUniqueViolation(error)) {
-      return NextResponse.json({ message: `SKU "${sku}" already exists` }, { status: 409 });
-    }
     if (isForeignKeyViolation(error)) {
       return NextResponse.json({ message: 'Category or base unit does not exist' }, { status: 400 });
     }

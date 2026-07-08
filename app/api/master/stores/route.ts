@@ -13,6 +13,7 @@ export type StoreRow = {
   name: string;
   address: string | null;
   phone: string | null;
+  email: string | null;
   type: string;
   is_default: boolean;
   created_at: string;
@@ -20,7 +21,7 @@ export type StoreRow = {
 };
 
 const SELECT_COLS =
-  'id, name, address, phone, type, is_default, created_at, updated_at';
+  'id, name, address, phone, email, type, is_default, created_at, updated_at';
 
 // Ensures exactly one default warehouse when there is a single warehouse and
 // none is currently marked default. Call inside an open transaction.
@@ -51,6 +52,7 @@ export async function POST(request: Request) {
     name: string;
     address: string;
     phone: string;
+    email: string;
     type: string;
     is_default: boolean;
   }> | null;
@@ -60,6 +62,7 @@ export async function POST(request: Request) {
   const type = typeof body?.type === 'string' ? body.type.trim() : '';
   const address = (typeof body?.address === 'string' ? body.address.trim() : '') || null;
   const phone = (typeof body?.phone === 'string' ? body.phone.trim() : '') || null;
+  const email = (typeof body?.email === 'string' ? body.email.trim() : '') || null;
   let isDefault = typeof body?.is_default === 'boolean' ? body.is_default : false;
 
   if (!id || !name || !type) {
@@ -92,10 +95,10 @@ export async function POST(request: Request) {
     }
 
     const result = await client.query<StoreRow>(
-      `INSERT INTO stores (id, name, address, phone, type, is_default)
-       VALUES ($1, $2, $3, $4, $5, $6)
+      `INSERT INTO stores (id, name, address, phone, email, type, is_default)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING ${SELECT_COLS}`,
-      [id, name, address, phone, type, isDefault]
+      [id, name, address, phone, email, type, isDefault]
     );
 
     await client.query('COMMIT');
