@@ -1,0 +1,33 @@
+.section {
+  padding: 32px 36px;
+  border: 1px solid #2f3549;
+  border-radius: 6px;
+  background: #202331;
+}
+
+.heading {
+  color: #d5dcff;
+  margin-bottom: 26px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #2f3549;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px 28px;
+}
+
+.field {
+  margin-bottom: 0;
+}
+
+.inputWrapper {
+  margin-top: 6px;
+  border-bottom: 1px solid #2f3549;
+  transition: border-color 0.15s;
+}
+
+.inputWrapper:focus-within {
+  border-bottom-color: #7aa2f7;
+}
