@@ -40,6 +40,7 @@ const SORT_COLUMNS: Record<string, string> = {
   sr_no: 'p.sr_no',
   name: 'lower(p.name)',
   category_name: 'lower(c.name)',
+  base_unit_name: 'lower(u.name)',
   purchase_price: 'p.purchase_price',
   retail_price: 'p.retail_price',
   wholesale_price: 'p.wholesale_price',

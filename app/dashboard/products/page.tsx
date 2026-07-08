@@ -12,6 +12,8 @@ type Product = {
   name: string;
   category_id: string | null;
   category_name: string | null;
+  base_unit_id: string | null;
+  base_unit_name: string | null;
   purchase_price: string | null;
   retail_price: string | null;
   wholesale_price: string | null;
@@ -20,6 +22,7 @@ type Product = {
 type Draft = {
   name: string;
   category_id: string;
+  base_unit_id: string;
   purchase_price: string;
   retail_price: string;
   wholesale_price: string;
@@ -28,6 +31,7 @@ type Draft = {
 const EMPTY_DRAFT: Draft = {
   name: '',
   category_id: '',
+  base_unit_id: '',
   purchase_price: '',
   retail_price: '',
   wholesale_price: '',
@@ -39,6 +43,7 @@ type SortKey =
   | 'sr_no'
   | 'name'
   | 'category_name'
+  | 'base_unit_name'
   | 'purchase_price'
   | 'retail_price'
   | 'wholesale_price';
@@ -49,6 +54,7 @@ const control =
 export default function ProductsPage() {
   const [format, setFormat] = useState<AppSettingsData>(DEFAULT_SETTINGS.app);
   const [categories, setCategories] = useState<Option[]>([]);
+  const [baseUnits, setBaseUnits] = useState<Option[]>([]);
 
   const [items, setItems] = useState<Product[]>([]);
   const [total, setTotal] = useState(0);
@@ -88,9 +94,10 @@ export default function ProductsPage() {
 
   useEffect(() => {
     (async () => {
-      const [settingsRes, catRes] = await Promise.all([
+      const [settingsRes, catRes, unitRes] = await Promise.all([
         fetch('/api/settings'),
         fetch('/api/master/categories'),
+        fetch('/api/master/base-units'),
       ]);
       if (settingsRes.ok) {
         const data = await settingsRes.json();
@@ -102,6 +109,15 @@ export default function ProductsPage() {
           (data.items ?? []).map((c: { id: string; name: string }) => ({
             value: c.id,
             label: `${c.id} — ${c.name}`,
+          }))
+        );
+      }
+      if (unitRes.ok) {
+        const data = await unitRes.json();
+        setBaseUnits(
+          (data.items ?? []).map((u: { id: string; name: string }) => ({
+            value: u.id,
+            label: `${u.id} — ${u.name}`,
           }))
         );
       }
@@ -187,13 +203,14 @@ export default function ProductsPage() {
     { key: 'sr_no', label: 'sr no' },
     { key: 'name', label: 'name' },
     { key: 'category_name', label: 'category' },
+    { key: 'base_unit_name', label: 'unit' },
     { key: 'purchase_price', label: 'purchase', align: 'right' },
     { key: 'retail_price', label: 'retail', align: 'right' },
     { key: 'wholesale_price', label: 'wholesale', align: 'right' },
   ];
 
   return (
-    <main className="mx-auto max-w-[1040px] px-6 py-10">
+    <main className="w-full px-6 py-10">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-[#d5dcff]">products</h1>
         <div className="flex items-center gap-2">
@@ -235,6 +252,19 @@ export default function ProductsPage() {
             {categories.map((c) => (
               <option key={c.value} value={c.value}>
                 {c.label}
+              </option>
+            ))}
+          </select>
+          <select
+            value={draft.base_unit_id}
+            onChange={(e) => setField('base_unit_id', e.target.value)}
+            className={`${control} min-w-[130px]`}
+            aria-label="unit"
+          >
+            <option value="">— unit —</option>
+            {baseUnits.map((u) => (
+              <option key={u.value} value={u.value}>
+                {u.label}
               </option>
             ))}
           </select>
@@ -306,6 +336,7 @@ export default function ProductsPage() {
                   <td className="px-4 py-2">{p.sr_no}</td>
                   <td className="px-4 py-2">{p.name}</td>
                   <td className="px-4 py-2">{p.category_name ?? '—'}</td>
+                  <td className="px-4 py-2">{p.base_unit_name ?? '—'}</td>
                   <td className="px-4 py-2 text-right">{formatMoney(p.purchase_price, format) || '—'}</td>
                   <td className="px-4 py-2 text-right">{formatMoney(p.retail_price, format) || '—'}</td>
                   <td className="px-4 py-2 text-right">{formatMoney(p.wholesale_price, format) || '—'}</td>
