@@ -26,7 +26,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const type = body?.type?.trim();
   const address = body?.address?.trim() || null;
   const phone = body?.phone?.trim() || null;
-  const isDefault = Boolean(body?.is_default);
+  const isDefaultExplicit = typeof body?.is_default === 'boolean' ? body.is_default : null;
 
   if (!name || !type) {
     return NextResponse.json({ message: 'Name and type are required' }, { status: 400 });
@@ -34,7 +34,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (!STORE_TYPES.includes(type as StoreType)) {
     return NextResponse.json({ message: 'Invalid store type' }, { status: 400 });
   }
-  if (isDefault && type !== 'warehouse') {
+  if (isDefaultExplicit === true && type !== 'warehouse') {
     return NextResponse.json(
       { message: 'Only a warehouse can be the default store' },
       { status: 400 }
@@ -44,6 +44,19 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const client = await getPool().connect();
   try {
     await client.query('BEGIN');
+
+    const currentResult = await client.query<{ is_default: boolean }>(
+      'SELECT is_default FROM stores WHERE id = $1',
+      [id]
+    );
+    if (currentResult.rowCount === 0) {
+      await client.query('ROLLBACK');
+      return NextResponse.json({ message: 'Not found' }, { status: 404 });
+    }
+
+    const effectiveDefault =
+      isDefaultExplicit !== null ? isDefaultExplicit : currentResult.rows[0].is_default;
+    const isDefault = type === 'warehouse' ? effectiveDefault : false;
 
     if (isDefault) {
       await client.query(
